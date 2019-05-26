@@ -1,0 +1,15 @@
+{
+  "name": "bili-live-danmu",
+  "version": "0.0.1",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "node test.js"
+  },
+  "author": "Ted Zyzsdy",
+  "license": "MIT",
+  "dependencies": {
+    "axios": "^0.18.0",
+    "fast-xml-parser": "^3.12.16"
+  }
+}
