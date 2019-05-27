@@ -1,12 +1,16 @@
 {
-  "name": "bili-live-danmu",
+  "name": "danmulive",
   "version": "0.0.1",
-  "description": "",
+  "description": "连接并解析B站直播弹幕",
   "main": "index.js",
   "scripts": {
     "test": "node test.js"
   },
   "author": "Ted Zyzsdy",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/zyzsdy/node-bili-live-danmu.git"
+  },
   "license": "MIT",
   "dependencies": {
     "axios": "^0.18.0",

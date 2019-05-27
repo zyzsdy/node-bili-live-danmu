@@ -1,22 +1,29 @@
 const axios = require('axios');
 const xmlparser = require('fast-xml-parser');
 const net = require('net');
-const events = require('events')
+const DanmuAutoParseStream = require('./DanmuAutoParseStream');
 
-class BiliLiveDanmu extends events.EventEmitter {
-    constructor(loogRoomid) {
-        super();
+const DM_MSG_POPULARITY = 2;
+const DM_MSG_PLAYER_COMMAND = 4;
+const DM_MSG_JOIN_COMMAND = 7;
+
+class DanmuProvider{
+    constructor(loogRoomid, daps) {
         this.roomid = loogRoomid;
         this.chatClient = null;
+        this.connected = false;
+        this.daps = daps;
     }
 
     connect() {
-        if (this.chatClient != null){
-            console.error("Already Connected!");
+        if (this.connected){
+            console.error("Already connected!");
             return;
+        }else{
+            this.connected = true;
         }
 
-
+        //调用API获取弹幕服务器的地址和端口
         new Promise((resolve, reject) => {
             axios.get("http://live.bilibili.com/api/player?id=cid:" + this.roomid)
             .then(res => {
@@ -36,11 +43,21 @@ class BiliLiveDanmu extends events.EventEmitter {
         });
         
     }
+
+    disconnect(){
+        if (!this.connected){
+            console.error("Not connected!");
+            return;
+        }
+
+        this.chatClient.end();
+        this.connected = false;
+    }
     
     _connectBili(info){
         this.chatClient = new net.Socket();
         this.chatClient.connect(parseInt(info.port), info.server, () => {
-            console.log('START CONNECT TO:' + info.server + ":" + info.port);
+            console.log('START CONNECTING TO: ' + info.server + ":" + info.port);
 
             //发送加入频道请求
             let tmpUid = parseInt(1e14 + 2e14 * Math.random());
@@ -48,42 +65,37 @@ class BiliLiveDanmu extends events.EventEmitter {
                 "roomid": this.roomid,
                 "uid": tmpUid
             }
-            this._send(7, JSON.stringify(joinData));
+            this._send(DM_MSG_JOIN_COMMAND, JSON.stringify(joinData));
 
             //循环发送心跳包
-            setInterval(() => {
-                this._send(2);
-            }, 30000);
-            this._send(2);
+            this._heartBeat();
         });
-        this.chatClient.on("data", data => {
-            let danmuBuffer = Buffer.from(data, 'utf-8');
-            
-            let packetLength = danmuBuffer.readInt32BE(0);
-            let magic = danmuBuffer.readInt16BE(4);
-            let protoVersion = danmuBuffer.readInt16BE(6);
-            let typeId = danmuBuffer.readInt32BE(8);
-            let typeParam = danmuBuffer.readInt32BE(12);
-
-            //console.log("DEBUG:" + packetLength + "," + magic + "," + protoVersion + "," + typeId + "," + typeParam);
-
-            if (magic == 16 && packetLength - 16 > 0){
-                let body = danmuBuffer.slice(16);
-
-                typeId -= 1;
-
-                if(typeId == 2){
-                    let qiRenZhi = body.readInt32BE(0);
-                    //console.log("气人值:" + qiRenZhi);
-                    this.emit('qirenzhi', qiRenZhi);
-                }
-
-                if(typeId == 4){
-                    //console.log(body.toString());
-                    this.emit('danmu', body.toString());
-                }
+        this.chatClient.pipe(this.daps);
+        this.chatClient.on("end", () => {
+            console.info("The server actively closes the connection.");
+        });
+        this.chatClient.on("close", had_error => {
+            if(had_error){
+                console.error("The connection is closed due to a transmission error.");
+            }else{
+                console.info("Disconnected.");
             }
+            this.connected = false;
         });
+        this.chatClient.on("error", err => {
+            console.error("An error occurred in the connection: " + err);
+            this.connected = false;
+            this.chatClient.destroy();
+        });
+    }
+
+    _heartBeat(){
+        if(this.connected){
+            this._send(DM_MSG_POPULARITY);
+            setTimeout(() => {
+                this._heartBeat();
+            }, 30000);
+        }
     }
 
     _send(action, body = ""){
@@ -91,7 +103,7 @@ class BiliLiveDanmu extends events.EventEmitter {
         let protoVersion = 1;
         let param = 1;
 
-        console.log(body);
+        //console.log(body);
 
         let payload = Buffer.from(body, 'utf-8');
         let packetLength = payload.length + 16;
@@ -112,4 +124,7 @@ class BiliLiveDanmu extends events.EventEmitter {
 }
 
 
-module.exports = BiliLiveDanmu;
+module.exports = {
+    DanmuProvider: DanmuProvider,
+    DanmuAutoParseStream: DanmuAutoParseStream
+}
