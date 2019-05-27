@@ -4,10 +4,10 @@
 ## 简易用法
 
 ```javascript
-const { BiliLiveDanmu, DanmuAutoParseStream } = require('.');
+const { DanmuProvider, DanmuAutoParseStream } = require('danmulive');
 
 let danmuParser = new DanmuAutoParseStream();
-let danmuProvider = new BiliLiveDanmu(12235923, danmuParser);
+let danmuProvider = new DanmuProvider(12235923, danmuParser);
 
 danmuProvider.connect();
 
