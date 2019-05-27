@@ -1,5 +1,10 @@
 # bilibili直播弹幕解析库
 
+## 安装
+
+```
+npm i danmulive --save
+```
 
 ## 简易用法
 

@@ -13,9 +13,16 @@ function test(){
 
         if (data.type == "danmu"){
             if (data.value.cmd == "DANMU_MSG"){
+                let flag = data.value.info[0][9];
                 let author = data.value.info[2][1];
                 let content = data.value.info[1];
-                console.log(author + ":\t\t" + content);
+
+                if (author.length <= 25){
+                    author = author + ":" + " ".repeat(25 - author.length);
+                }
+
+                if (flag == 0) console.log(author + "\t" + content);
+                else console.log("==");
             }
         }
 
@@ -28,9 +35,9 @@ function test(){
         }
     });
 
-    setTimeout(() => {
-        danmuProvider.disconnect();
-    }, 300000);
+    //setTimeout(() => {
+    //    danmuProvider.disconnect();
+    //}, 300000);
 }
 
 test();
