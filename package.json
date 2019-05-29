@@ -1,6 +1,6 @@
 {
   "name": "danmulive",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "连接并解析B站直播弹幕",
   "main": "index.js",
   "scripts": {

@@ -20,7 +20,7 @@ danmuParser.on("data", data => {
     //console.log(data);
 
     if (data.type == "danmu"){
-        if (data.value.cmd == "DANMU_MSG"){
+        if (data.value.cmd.startsWith("DANMU_MSG")){
             let author = data.value.info[2][1];
             let content = data.value.info[1];
             console.log(author + ":\t\t" + content);

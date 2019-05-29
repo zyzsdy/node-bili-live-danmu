@@ -34,6 +34,10 @@ class DanmuProvider{
                     "server": chatInfo.root.dm_server,
                     "port": chatInfo.root.dm_port
                 });
+                // resolve({
+                //     "server": "chat.bilibili.com",
+                //     "port": 88
+                // }); //old
             })
             .catch(err => {
                 console.error(err);

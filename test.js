@@ -3,8 +3,8 @@ const { DanmuProvider, DanmuAutoParseStream } = require('.');
 
 function test(){
     let danmuParser = new DanmuAutoParseStream();
-    let danmuProvider = new DanmuProvider(12235923, danmuParser);
-    //let danmuProvider = new DanmuProvider(14917277, danmuParser);
+    //let danmuProvider = new DanmuProvider(12235923, danmuParser);
+    let danmuProvider = new DanmuProvider(14917277, danmuParser);
     
     danmuProvider.connect();
     
@@ -12,7 +12,9 @@ function test(){
         //console.log(data);
 
         if (data.type == "danmu"){
-            if (data.value.cmd == "DANMU_MSG"){
+            if (data.value.cmd.startsWith("DANMU_MSG")){
+                //console.log(data.value.cmd);
+
                 let flag = data.value.info[0][9];
                 let author = data.value.info[2][1];
                 let content = data.value.info[1];
@@ -22,7 +24,7 @@ function test(){
                 }
 
                 if (flag == 0) console.log(author + "\t" + content);
-                else console.log("==");
+                //else console.log("==");
             }
         }
 
