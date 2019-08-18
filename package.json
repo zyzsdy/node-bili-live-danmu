@@ -1,6 +1,6 @@
 {
   "name": "danmulive",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "连接并解析B站直播弹幕",
   "main": "index.js",
   "scripts": {
@@ -13,7 +13,6 @@
   },
   "license": "MIT",
   "dependencies": {
-    "axios": "^0.18.0",
-    "fast-xml-parser": "^3.12.16"
+    "axios": "^0.19.0"
   }
 }

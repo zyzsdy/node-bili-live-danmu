@@ -4,7 +4,10 @@ const { DanmuProvider, DanmuAutoParseStream } = require('.');
 function test(){
     let danmuParser = new DanmuAutoParseStream();
     //let danmuProvider = new DanmuProvider(12235923, danmuParser);
-    let danmuProvider = new DanmuProvider(14917277, danmuParser);
+    //let danmuProvider = new DanmuProvider(14917277, danmuParser);
+    let roomid = parseInt(process.argv[2] || 14917277);
+    
+    let danmuProvider = new DanmuProvider(roomid, danmuParser);
     
     danmuProvider.connect();
     
@@ -29,11 +32,12 @@ function test(){
         }
 
         if (data.type == "qirenzhi"){
+            if (data.value > 1)
             console.log("气人值：" + data.value);
         }
 
         if (data.type == "connected"){
-            console.log("连接成功");
+            console.log(roomid + " 连接成功");
         }
     });
 

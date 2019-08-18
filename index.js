@@ -1,5 +1,4 @@
 const axios = require('axios');
-const xmlparser = require('fast-xml-parser');
 const net = require('net');
 const DanmuAutoParseStream = require('./DanmuAutoParseStream');
 
@@ -25,19 +24,12 @@ class DanmuProvider{
 
         //调用API获取弹幕服务器的地址和端口
         new Promise((resolve, reject) => {
-            axios.get("http://live.bilibili.com/api/player?id=cid:" + this.roomid)
+            axios.get("https://api.live.bilibili.com/room/v1/Danmu/getConf?room_id=" + this.roomid)
             .then(res => {
-                let xmlString = "<root>" + res.data + "</root>";
-                let chatInfo = xmlparser.parse(xmlString);
-
                 resolve({
-                    "server": chatInfo.root.dm_server,
-                    "port": chatInfo.root.dm_port
+                    "server": res.data.data.host,
+                    "port": res.data.data.port
                 });
-                // resolve({
-                //     "server": "chat.bilibili.com",
-                //     "port": 88
-                // }); //old
             })
             .catch(err => {
                 console.error(err);
