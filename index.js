@@ -28,7 +28,8 @@ class DanmuProvider{
             .then(res => {
                 resolve({
                     "server": res.data.data.host,
-                    "port": res.data.data.port
+                    "port": res.data.data.port,
+                    "token": res.data.data.token
                 });
             })
             .catch(err => {
@@ -56,10 +57,12 @@ class DanmuProvider{
             console.log('START CONNECTING TO: ' + info.server + ":" + info.port);
 
             //发送加入频道请求
-            let tmpUid = parseInt(1e14 + 2e14 * Math.random());
             let joinData = {
                 "roomid": this.roomid,
-                "uid": tmpUid
+                "uid": 0,
+                "protover": 2,
+                "token": info.token,
+                "platform": "biliroku"
             }
             this._send(DM_MSG_JOIN_COMMAND, JSON.stringify(joinData));
 
@@ -95,21 +98,21 @@ class DanmuProvider{
     }
 
     _send(action, body = ""){
-        let magic = 16;
-        let protoVersion = 1;
+        let headerLength = 16;
+        let protoVersion = 2;
         let param = 1;
 
         //console.log(body);
-
         let payload = Buffer.from(body, 'utf-8');
-        let packetLength = payload.length + 16;
 
+        let packetLength = headerLength + payload.length;
         let sendBuffer = Buffer.alloc(packetLength);
-        sendBuffer.writeInt32BE(packetLength, 0);
-        sendBuffer.writeInt16BE(magic, 4);
-        sendBuffer.writeInt16BE(protoVersion, 6);
-        sendBuffer.writeInt32BE(action, 8);
-        sendBuffer.writeInt32BE(param, 12);
+
+        sendBuffer.writeInt32BE(packetLength, 0); //0~3字节 包长度
+        sendBuffer.writeInt16BE(headerLength, 4); //4~5字节 头部长度
+        sendBuffer.writeInt16BE(protoVersion, 6); //6~7字节 协议版本号 当前为 2
+        sendBuffer.writeInt32BE(action, 8); //8~11字节 操作命令
+        sendBuffer.writeInt32BE(param, 12); //12~15字节 操作命令参数（sub命令）
 
         if (payload.length > 0) {
             payload.copy(sendBuffer, 16);

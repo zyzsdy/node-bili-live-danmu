@@ -1,5 +1,7 @@
 # bilibili直播弹幕解析库
 
+![protocol](protocol.png)
+
 ## 安装
 
 ```
@@ -8,16 +10,17 @@ npm i danmulive --save
 
 ## 简易用法
 
+请阅读一下test.js了解用法
+
 ```javascript
 const { DanmuProvider, DanmuAutoParseStream } = require('danmulive');
 
 let danmuParser = new DanmuAutoParseStream();
-let danmuProvider = new DanmuProvider(12235923, danmuParser);
+let danmuProvider = new DanmuProvider(14917277, danmuParser);
 
 danmuProvider.connect();
 
 danmuParser.on("data", data => {
-    //console.log(data);
 
     if (data.type == "danmu"){
         if (data.value.cmd.startsWith("DANMU_MSG")){

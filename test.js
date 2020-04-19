@@ -29,6 +29,9 @@ function test(){
                 if (flag == 0) console.log(author + "\t" + content);
                 //else console.log("==");
             }
+            else{
+                console.log(data.value.cmd);
+            }
         }
 
         if (data.type == "qirenzhi"){
