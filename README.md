@@ -93,3 +93,7 @@ danmu的value是bilibili直播播放器解析的json
 qirenzhi的value是一个int32，值为服务器更新的当前人气
 
 connected的value恒为true，表明服务器已经接受了连接请求
+
+## LICENSE
+
+MIT
